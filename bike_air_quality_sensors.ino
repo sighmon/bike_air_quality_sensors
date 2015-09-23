@@ -36,6 +36,11 @@ float calcVoltage = 0;
 float dustDensity = 0;
 
 
+// TODO: MQ7 Sensor
+int pwmPower = 3; // Digital 3
+int mqSensor = 4; // Analog 4
+
+
 void setup() {
   
   // DHT setup
