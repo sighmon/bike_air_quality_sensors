@@ -16,7 +16,8 @@
   http://thesis.jmsaavedra.com/make/
 */
 
-// Arduino Task Scheduler.
+// Arduino Task Scheduler for reading sensors every 1 second.
+// https://github.com/arkhipenko/TaskScheduler
 #include <TaskScheduler.h>
 Task dustTask(1000, -1, &dustTaskCallback);
 Task coReadTask(1000, -1, &coReadTaskCallback);
