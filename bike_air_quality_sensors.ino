@@ -36,9 +36,10 @@ float calcVoltage = 0;
 float dustDensity = 0;
 
 
-// TODO: MQ7 Sensor
+// MQ7 Sensor
 int pwmPower = 3; // Digital 3
 int mqSensor = 4; // Analog 4
+float mqReading = 0;
 
 
 void setup() {
@@ -118,4 +119,16 @@ void loop() {
   
   delay(1000);
   
+  // MQ7 Carbon Monoxide sensor reading
+  Serial.println("MQ7 heating for 60s");
+  analogWrite(pwmPower, 0);
+  delay(60000);
+  Serial.println("MQ7 at 1.4v for 90s");
+  analogWrite(pwmPower, (255 - 255*(1.4/5)));
+  for (int i = 0; i < 9; i++) {
+    delay(10000);
+    Serial.print("MQ7 Reading: ");
+    mqReading = analogRead(mqSensor);
+    Serial.println(mqReading);
+  }
 }
