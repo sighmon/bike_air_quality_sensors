@@ -95,7 +95,7 @@ void readSensorsTaskCallback() {
   // read particle sensor
   writeData(temperature, humidity, 'p', readDustSensor());
   // read CO sensor
-  writeData(temperature, humidity, 'c', readCoSensor());
+  writeData(temperature, humidity, heaterOn ? 'C' : 'c', readCoSensor());
 }
 
 
