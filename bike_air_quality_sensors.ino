@@ -14,13 +14,40 @@
 
   MQ-7 Carbon Monoxide sensor:
   http://thesis.jmsaavedra.com/make/
+  
+  BLE Nano
+  http://redbearlab.com/blenano/
+  https://github.com/RedBearLab/nRF51822-Arduino
+  http://redbearlab.com/getting-started-nrf51822
 */
+
+#include <stdio.h>
+
+/**
+ * Source: https://chromium.googlesource.com/chromiumos/platform/vboot_reference/+/master/firmware/lib/crc8.c
+ * Return CRC-8 of the data, using x^8 + x^2 + x + 1 polynomial.  A table-based
+ * algorithm would be faster, but for only a few bytes it isn't worth the code
+ * size. */
+uint8_t Crc8(const void *vptr, int len)
+{
+	const uint8_t *data = (uint8_t *) vptr;
+	unsigned crc = 0;
+	int i, j;
+	for (j = len; j; j--, data++) {
+		crc ^= (*data << 8);
+		for(i = 8; i; i--) {
+			if (crc & 0x8000)
+				crc ^= (0x1070 << 3);
+			crc <<= 1;
+		}
+	}
+	return (uint8_t)(crc >> 8);
+}
 
 // Arduino Task Scheduler for reading sensors every 1 second.
 // https://github.com/arkhipenko/TaskScheduler
 #include <TaskScheduler.h>
-Task dustTask(1000, -1, &dustTaskCallback);
-Task coReadTask(1000, -1, &coReadTaskCallback);
+Task readSensorsTask(5000, -1, &readSensorsTaskCallback);
 Task coHeaterTask(60000, -1, &coHeaterTaskCallback);
 Scheduler runner;
 
@@ -51,48 +78,29 @@ float mqReading = 0;
 bool heaterOn = false;
 
 
-void readTemperatureAndHumidity() {
-  // DHT measurements.
-  // Reading temperature or humidity takes about 250 milliseconds!
-  // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
-  float h = dht.readHumidity();
-  // Read temperature as Celsius (the default)
-  float t = dht.readTemperature();
-  // Read temperature as Fahrenheit (isFahrenheit = true)
-  float f = dht.readTemperature(true);
+void writeData(float temperature, float humidity, char sensor, float reading) {
+  const int TEXT_BUF = 100;
+  char buf[TEXT_BUF];
+  int bytes = snprintf(buf, TEXT_BUF, "t: %s h: %s %c: %s ", String(temperature, 1).c_str(), String(humidity, 1).c_str(), sensor, String(reading, 1).c_str());
+  Serial.write(buf, bytes);
+  uint8_t crc = Crc8(buf, bytes);
+  bytes = snprintf(buf, TEXT_BUF, "*%03d*\n", crc);
+  Serial.write(buf, bytes);
+}
 
-  // Check if any reads failed and exit early (to try again).
-  if (isnan(h) || isnan(t) || isnan(f)) {
-    Serial.println("=Failed to read from DHT temp/humidity sensor!");
-    return;
-  }
-  
-  // Compute heat index in Fahrenheit (the default)
-  float hif = dht.computeHeatIndex(f, h);
-  // Compute heat index in Celsius (isFahreheit = false)
-  float hic = dht.computeHeatIndex(t, h, false);
-
-//  Serial.print("Humidity: ");
-  Serial.print("\th:");
-  Serial.print(h);
-//  Serial.print(" %\t");
-//  Serial.print("Temperature: ");
-  Serial.print("\tt:");
-  Serial.println(t);
-//  Serial.print(" *C ");
-//  Serial.print(f);
-//  Serial.print(" *F\t");
-//  Serial.print("Heat index: ");
-//  Serial.print(hic);
-//  Serial.print(" *C ");
-//  Serial.print(hif);
-//  Serial.println(" *F");
+void readSensorsTaskCallback() {
+  // read temperature, humidity
+  float humidity = dht.readHumidity();
+  float temperature = dht.readTemperature();
+  // read particle sensor
+  writeData(temperature, humidity, 'p', readDustSensor());
+  // read CO sensor
+  writeData(temperature, humidity, 'c', readCoSensor());
 }
 
 
-void dustTaskCallback() {
-  // Callback function to read the dust sensor
-  // NOTE: Also reads the temp/humidity sensor too
+float readDustSensor() {
+  // Function to read the dust sensor
   
   // Sharp Optical Dust Sensor GP2Y10 loop
   digitalWrite(ledPower,LOW); // power on the LED
@@ -102,38 +110,18 @@ void dustTaskCallback() {
   
   delayMicroseconds(deltaTime);
   digitalWrite(ledPower,HIGH); // turn the LED off
-  delayMicroseconds(sleepTime);
-
-  // 0 - 5.0V mapped to 0 - 1023 integer values 
-  calcVoltage = voMeasured * (5.0 / 1024); 
+  delayMicroseconds(sleepTime); 
   
-  // linear eqaution taken from http://www.howmuchsnow.com/arduino/airquality/
-  // Chris Nafis (c) 2012
-  dustDensity = (0.17 * calcVoltage - 0.1)*1000; 
-  
-//  Serial.print("Raw Signal Value (0-1023): ");
-  Serial.print("d:");
-  Serial.print(voMeasured);
-  
-//  Serial.print(" - Voltage: ");
-//  Serial.print(calcVoltage);
-  
-//  Serial.print(" - Dust Density [ug/m3]: ");
-//  Serial.println(dustDensity);
-  
-  readTemperatureAndHumidity();
+  return voMeasured;
 }
 
 
-void coReadTaskCallback() {
-  // Callback function to read the Carbon Monoxide sensor
-  // NOTE: Also reads the temp/humidity sensor too
+float readCoSensor() {
+  // Function to read the Carbon Monoxide sensor
   
-  Serial.print("c:");
   mqReading = analogRead(mqSensor);
-  Serial.print(mqReading);
-  
-  readTemperatureAndHumidity();
+
+  return mqReading;
 }
 
 
@@ -168,10 +156,8 @@ void setup() {
   
   // Task scheduler setup
   Serial.println("=Setting up tasks");
-  dustTask.enable();
-  runner.addTask(dustTask);
-  coReadTask.enable();
-  runner.addTask(coReadTask);
+  readSensorsTask.enable();
+  runner.addTask(readSensorsTask);
   coHeaterTask.enable();
   runner.addTask(coHeaterTask);
   
