@@ -23,13 +23,16 @@ by Damien & Simon
 
 The sensors are read every second and output in the format:
 
-* d: = Dust particle raw sensor value
+* p: = Dust particle raw sensor value
 * c: = Carbon monoxide raw sensor value
+* C: = Carbon monoxide raw sensor value while the heater is heating (so possibly ignore this value)
 * h: = Humidity %
 * t: = Temperature in Celsius
+* *000* = the [CRC](https://chromium.googlesource.com/chromiumos/platform/vboot_reference/+/master/firmware/lib/crc8.c) for the line
 
-<code>d:148.00	h:30.20	t:21.00</code>
-<code>c:253.00	h:30.20	t:21.00</code>
+<code>t:28.4 h:18.0 C:000 *000*</code>
+<code>t:28.4 h:18.0 c:000 *000*</code>
+<code>t:28.4 h:18.0 p:000 *000*</code>
 
 ## Libraries
 
@@ -42,10 +45,18 @@ Thanks for the Sharp Optical Dust Sensor library:
 MQ-7 Carbon Monoxide sensor:
 <http://thesis.jmsaavedra.com/make/>
 
+# iOS app
+
+The [iOS app](https://github.com/sighmon/BikeAirQualitySensorsiOS) adds:
+
+* ISO 8601 formatted time, including the time zone.
+* The position - latitude, longitude and accuracy.
+
 ## TODO
 
 * <s>Connect sensors to the Arduino.</s>
 * <s>Send data via Bluetooth.</s>
+* <s>Build an iOS app.</s>
 * Build a Rails server.
 * Build an Android app.
-* Build an iOS app.
+
