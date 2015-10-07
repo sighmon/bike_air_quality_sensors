@@ -78,24 +78,26 @@ float mqReading = 0;
 bool heaterOn = false;
 
 
-void writeData(float temperature, float humidity, char sensor, float reading) {
-  const int TEXT_BUF = 100;
-  char buf[TEXT_BUF];
-  int bytes = snprintf(buf, TEXT_BUF, "t: %s h: %s %c: %s ", String(temperature, 1).c_str(), String(humidity, 1).c_str(), sensor, String(reading, 1).c_str());
-  Serial.write(buf, bytes);
-  uint8_t crc = Crc8(buf, bytes);
-  bytes = snprintf(buf, TEXT_BUF, "*%03d*\n", crc);
-  Serial.write(buf, bytes);
-}
+struct SENSOR_READINGS {
+    float temperature;
+    float humidity;
+    float particles;
+    float co;
+    char heaterOn;
+};
+
 
 void readSensorsTaskCallback() {
+  struct SENSOR_READINGS readings;  
   // read temperature, humidity
-  float humidity = dht.readHumidity();
-  float temperature = dht.readTemperature();
+  readings.humidity = dht.readHumidity();
+  readings.temperature = dht.readTemperature();
   // read particle sensor
-  writeData(temperature, humidity, 'p', readDustSensor());
+  readings.particles = readDustSensor();
   // read CO sensor
-  writeData(temperature, humidity, heaterOn ? 'C' : 'c', readCoSensor());
+  readings.heaterOn = heaterOn ? 1 : 0;
+  readings.co = readCoSensor();
+  Serial.write((char*) &readings, sizeof(SENSOR_READINGS));
 }
 
 
@@ -131,17 +133,17 @@ void coHeaterTaskCallback() {
   if (!heaterOn) {
     analogWrite(pwmPower, 0);
     heaterOn = true;
-    Serial.println("=");
-    Serial.println("=Heater is on for 60s");
-    Serial.println("=");
+    // Serial.println("=");
+    // Serial.println("=Heater is on for 60s");
+    // Serial.println("=");
     coHeaterTask.setInterval(60000);
     
   } else {
     analogWrite(pwmPower, (255 - 255*(1.4/5)));
     heaterOn = false;
-    Serial.println("=");
-    Serial.println("=Heater is off for 90s");
-    Serial.println("=");
+    // Serial.println("=");
+    // Serial.println("=Heater is off for 90s");
+    // Serial.println("=");
     coHeaterTask.setInterval(90000);
   }
   
@@ -151,11 +153,11 @@ void coHeaterTaskCallback() {
 void setup() {
   
   Serial.begin(9600);
-  Serial.println("=BIKE AIR QUALITY SENSOR");
-  Serial.println("========================");
+  // Serial.println("=BIKE AIR QUALITY SENSOR");
+  // Serial.println("========================");
   
   // Task scheduler setup
-  Serial.println("=Setting up tasks");
+  // Serial.println("=Setting up tasks");
   readSensorsTask.enable();
   runner.addTask(readSensorsTask);
   coHeaterTask.enable();
@@ -164,7 +166,7 @@ void setup() {
   runner.enableAll();
   
   // DHT setup
-  Serial.println("=Setting up DHT22 temp/humidity sensor");
+  // Serial.println("=Setting up DHT22 temp/humidity sensor");
   dht.begin();
   
   // Sharp Optical Dust Sensor GP2Y10 setup
