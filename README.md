@@ -21,18 +21,21 @@ by Damien & Simon
 
 ## Output
 
-The sensors are read every second and output in the format:
+The sensors are read every second and output in a struct:
 
-* p: = Dust particle raw sensor value
-* c: = Carbon monoxide raw sensor value
-* C: = Carbon monoxide raw sensor value while the heater is heating (so possibly ignore this value)
-* h: = Humidity %
-* t: = Temperature in Celsius
-* *000* = the [CRC](https://chromium.googlesource.com/chromiumos/platform/vboot_reference/+/master/firmware/lib/crc8.c) for the line
+`struct SENSOR_READINGS {
+    float temperature;
+    float humidity;
+    float particles;
+    float co;
+    char heaterOn;
+};`
 
-<code>t:28.4 h:18.0 C:000 *000*</code>
-<code>t:28.4 h:18.0 c:000 *000*</code>
-<code>t:28.4 h:18.0 p:000 *000*</code>
+* Temperature in Celsius
+* Humidity %
+* Dust particle raw sensor value
+* Carbon monoxide raw sensor value
+* Heater on/off sent as 1 or 0
 
 ## Libraries
 
