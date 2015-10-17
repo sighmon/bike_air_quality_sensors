@@ -98,6 +98,15 @@ void readSensorsTaskCallback() {
   readings.heaterOn = heaterOn ? 1 : 0;
   readings.co = readCoSensor();
   Serial.write((char*) &readings, sizeof(SENSOR_READINGS));
+  // for debugging
+//  Serial.print("t: ");
+//  Serial.print(dht.readTemperature());
+//  Serial.print(" h: ");
+//  Serial.print(dht.readHumidity());
+//  Serial.print(" p: ");
+//  Serial.print(readDustSensor());
+//  Serial.print(heaterOn ? " C: " : " c: ");
+//  Serial.println(readCoSensor());
 }
 
 
