@@ -48,18 +48,33 @@ Thanks for the Sharp Optical Dust Sensor library:
 MQ-7 Carbon Monoxide sensor:
 <http://thesis.jmsaavedra.com/make/>
 
-# iOS app
+## iOS & Android apps
 
-The [iOS app](https://github.com/sighmon/BikeAirQualitySensorsiOS) adds:
+[iOS app](https://github.com/sighmon/BikeAirQualitySensorsiOS)
+
+[Android app](https://github.com/33d/bike-air-sensor-logger)
+
+Both apps add:
 
 * ISO 8601 formatted time, including the time zone.
-* The position - latitude, longitude and accuracy.
+* The position - latitude and longitude.
+
+Then they export the data to a CSV file.
+
+
+## Python data parser for the CSV
+
+The Carbon Monoxide sensor can only be read after it's been heating for 60 seconds, so we need to throw away all of the data around this.
+
+This Python parser does just that. :-)
+
+<https://github.com/sighmon/bike_air_quality_sensor_csv_parser>
 
 ## TODO
 
 * <s>Connect sensors to the Arduino.</s>
 * <s>Send data via Bluetooth.</s>
 * <s>Build an iOS app.</s>
-* Build a Rails server.
-* Build an Android app.
+* <s>Build an Android app.</s>
+* Build a Rails server to open up the data via a public API.
 
