@@ -1,6 +1,6 @@
 # Bike air quality sensors
 
-[<img src="https://igcdn-photos-h-a.akamaihd.net/hphotos-ak-xaf1/t51.2885-15/e35/11430393_893793017342471_1356872161_n.jpg" width="30%" style="float: right;" />](https://instagram.com/p/8FcTIRgpwA)
+<img src="https://raw.githubusercontent.com/sighmon/bike_air_quality_sensors/master/sensors-arduino.jpg" width="100%" />
 
 A set of Carbon Monoxide & dust particle sensors combined with humidity/temperature sensors for measuring the air quality while cycling.
 
@@ -41,7 +41,9 @@ The sensors are read every second and output in a struct:
 
 Google Spreadsheet: [bike sensor data](https://docs.google.com/spreadsheets/d/1QTtR4N6sVxgsv6Za4kGe6Mn_MdasWhGjeMLYdR82Do4/edit?usp=sharing)
 
-[Graph of the data](https://docs.google.com/spreadsheets/d/1QTtR4N6sVxgsv6Za4kGe6Mn_MdasWhGjeMLYdR82Do4/pubchart?oid=1328642199&amp;format=interactive)
+[Interactive graph of the data](https://docs.google.com/spreadsheets/d/1QTtR4N6sVxgsv6Za4kGe6Mn_MdasWhGjeMLYdR82Do4/pubchart?oid=1328642199&amp;format=interactive)
+
+<img src="https://raw.githubusercontent.com/sighmon/bike_air_quality_sensors/master/chart-data.png" width="100%" />
 
 
 ## Libraries
