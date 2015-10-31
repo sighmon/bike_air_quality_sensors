@@ -37,6 +37,13 @@ The sensors are read every second and output in a struct:
 * Carbon monoxide raw sensor value
 * Heater on/off sent as 1 or 0
 
+### Data from the iOS app with GPS location & timestamp
+
+Google Spreadsheet: [bike sensor data](https://docs.google.com/spreadsheets/d/1QTtR4N6sVxgsv6Za4kGe6Mn_MdasWhGjeMLYdR82Do4/edit?usp=sharing)
+
+[Graph of the data](https://docs.google.com/spreadsheets/d/1QTtR4N6sVxgsv6Za4kGe6Mn_MdasWhGjeMLYdR82Do4/pubchart?oid=1328642199&amp;format=interactive)
+
+
 ## Libraries
 
 Thanks for the DHT sensor library:
@@ -69,6 +76,10 @@ The Carbon Monoxide sensor can only be read after it's been heating for 60 secon
 This Python parser does just that. :-)
 
 <https://github.com/sighmon/bike_air_quality_sensor_csv_parser>
+
+## GovHack Machinery of Data entry video
+
+<iframe width="100%" height="315" src="https://www.youtube.com/embed/KiIhrwRlb6w" frameborder="0" allowfullscreen></iframe>
 
 ## TODO
 
