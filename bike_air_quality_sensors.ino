@@ -44,9 +44,93 @@ uint8_t Crc8(const void *vptr, int len)
 	return (uint8_t)(crc >> 8);
 }
 
+class Task {
+  unsigned long interval;
+  void (*callback)();
+
+  unsigned long lastRun = 0;
+
+  public:
+  
+  Task(unsigned long interval, int dummy, void (*callback)()) {
+    this->interval = interval;
+    this->callback = callback;
+  }
+
+  void setInterval(unsigned long interval) {
+    this->interval = interval;
+  }
+
+  unsigned long waitTime(unsigned long now) {
+    if((lastRun+interval)<now) {
+      return 0;
+    } else {
+      return(now - (lastRun+interval));
+    }
+  }
+
+  void run(unsigned long now) {
+    lastRun = now;
+    (*callback)();
+  }
+
+  void enable() {
+    ;
+  }
+};
+
+class Scheduler {
+  const static int MAX_TASKS = 5;
+  Task *tasks[MAX_TASKS];
+  int taskCount;
+  
+  public:
+  
+  Scheduler() {
+    taskCount = 0;
+  }
+
+  void addTask(Task &task) {
+    if (taskCount<MAX_TASKS) {
+      tasks[taskCount] = &task;
+      taskCount++;
+    }
+  }
+
+  void enableAll() {
+    ;
+  }
+
+  void execute() {
+    while (1) {
+      unsigned long now = millis();
+
+      // run what's overdue
+      for(int i = 0; i < taskCount ; i++) {
+        if (tasks[i]->waitTime(now)==0) {
+          tasks[i]->run(now);
+        }
+      }
+
+      // how long to wait?
+      unsigned long minWait = 0;
+      for(int i = 0; i < taskCount ; i++) {
+        minWait = min(tasks[i]->waitTime(now),minWait);
+      }
+      // night night
+      delay(minWait);
+    }
+  }
+  
+};
+
 // Arduino Task Scheduler for reading sensors every 1 second.
 // https://github.com/arkhipenko/TaskScheduler
-#include <TaskScheduler.h>
+//#include <TaskScheduler.h>
+
+void readSensorsTaskCallback();
+void coHeaterTaskCallback();
+
 Task readSensorsTask(5000, -1, &readSensorsTaskCallback);
 Task coHeaterTask(60000, -1, &coHeaterTaskCallback);
 Scheduler runner;
@@ -86,30 +170,6 @@ struct SENSOR_READINGS {
     char heaterOn;
 };
 
-
-void readSensorsTaskCallback() {
-  struct SENSOR_READINGS readings;  
-  // read temperature, humidity
-  readings.humidity = dht.readHumidity();
-  readings.temperature = dht.readTemperature();
-  // read particle sensor
-  readings.particles = readDustSensor();
-  // read CO sensor
-  readings.heaterOn = heaterOn ? 1 : 0;
-  readings.co = readCoSensor();
-  Serial.write((char*) &readings, sizeof(SENSOR_READINGS));
-  // for debugging
-//  Serial.print("t: ");
-//  Serial.print(dht.readTemperature());
-//  Serial.print(" h: ");
-//  Serial.print(dht.readHumidity());
-//  Serial.print(" p: ");
-//  Serial.print(readDustSensor());
-//  Serial.print(heaterOn ? " C: " : " c: ");
-//  Serial.println(readCoSensor());
-}
-
-
 float readDustSensor() {
   // Function to read the dust sensor
   
@@ -133,6 +193,28 @@ float readCoSensor() {
   mqReading = analogRead(mqSensor);
 
   return mqReading;
+}
+
+void readSensorsTaskCallback() {
+  struct SENSOR_READINGS readings;  
+  // read temperature, humidity
+  readings.humidity = dht.readHumidity();
+  readings.temperature = dht.readTemperature();
+  // read particle sensor
+  readings.particles = readDustSensor();
+  // read CO sensor
+  readings.heaterOn = heaterOn ? 1 : 0;
+  readings.co = readCoSensor();
+  Serial.write((uint8_t*) &readings, sizeof(SENSOR_READINGS));
+  // for debugging
+//  Serial.print("t: ");
+//  Serial.print(dht.readTemperature());
+//  Serial.print(" h: ");
+//  Serial.print(dht.readHumidity());
+//  Serial.print(" p: ");
+//  Serial.print(readDustSensor());
+//  Serial.print(heaterOn ? " C: " : " c: ");
+//  Serial.println(readCoSensor());
 }
 
 
@@ -187,5 +269,7 @@ void loop() {
   
   // Run tasks
   runner.execute();
+
+  
 
 }
