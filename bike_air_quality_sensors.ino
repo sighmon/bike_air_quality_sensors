@@ -21,6 +21,9 @@
   http://redbearlab.com/getting-started-nrf51822
 */
 
+// For RedBear Duo don't connect to the cloud.
+SYSTEM_MODE(MANUAL);
+
 #include <stdio.h>
 
 /**
@@ -47,6 +50,10 @@ uint8_t Crc8(const void *vptr, int len)
 // Arduino Task Scheduler for reading sensors every 1 second.
 // https://github.com/arkhipenko/TaskScheduler
 #include <TaskScheduler.h>
+
+void readSensorsTaskCallback();
+void coHeaterTaskCallback();
+
 Task readSensorsTask(5000, -1, &readSensorsTaskCallback);
 Task coHeaterTask(60000, -1, &coHeaterTaskCallback);
 Scheduler runner;
@@ -86,6 +93,8 @@ struct SENSOR_READINGS {
     char heaterOn;
 };
 
+float readDustSensor();
+float readCoSensor();
 
 void readSensorsTaskCallback() {
   struct SENSOR_READINGS readings;  
@@ -97,7 +106,7 @@ void readSensorsTaskCallback() {
   // read CO sensor
   readings.heaterOn = heaterOn ? 1 : 0;
   readings.co = readCoSensor();
-  Serial.write((char*) &readings, sizeof(SENSOR_READINGS));
+  Serial.write((uint8_t*) &readings, sizeof(SENSOR_READINGS));
   // for debugging
 //  Serial.print("t: ");
 //  Serial.print(dht.readTemperature());
