@@ -26,7 +26,7 @@
 // For RedBear Duo don't connect to the cloud.
 SYSTEM_MODE(MANUAL);
 
-#define DEVICE_NAME                "Simple Chat"
+#define DEVICE_NAME                "Air quality"
 
 #define CHARACTERISTIC1_MAX_LEN    15
 #define CHARACTERISTIC2_MAX_LEN    15
@@ -39,6 +39,8 @@ SYSTEM_MODE(MANUAL);
 static uint8_t service1_uuid[16]       ={0x71,0x3d,0x00,0x00,0x50,0x3e,0x4c,0x75,0xba,0x94,0x31,0x48,0xf1,0x8d,0x94,0x1e};
 static uint8_t service1_tx_uuid[16]    ={0x71,0x3d,0x00,0x03,0x50,0x3e,0x4c,0x75,0xba,0x94,0x31,0x48,0xf1,0x8d,0x94,0x1e};
 static uint8_t service1_rx_uuid[16]    ={0x71,0x3d,0x00,0x02,0x50,0x3e,0x4c,0x75,0xba,0x94,0x31,0x48,0xf1,0x8d,0x94,0x1e};
+// From iOS app
+//static uint8_t service1_rx_uuid[16]    ={0x71,0x3D,0x00,0x03,0x50,0x3E,0x4C,0x75,0xBA,0x94,0x31,0x48,0xF1,0x8D,0x94,0x1E,};
 
 static uint8_t  appearance[2]    = {0x00, 0x02};
 static uint8_t  change[2]        = {0x00, 0x00};
@@ -70,7 +72,7 @@ static uint8_t rx_state=0;
 void deviceConnectedCallback(BLEStatus_t status, uint16_t handle) {
     switch (status){
         case BLE_STATUS_OK:
-            Serial.println("Device connected!");
+//            Serial.println("Device connected!");
             break;
         default:
             break;
@@ -84,8 +86,8 @@ void deviceDisconnectedCallback(uint16_t handle){
 
 int gattWriteCallback(uint16_t value_handle, uint8_t *buffer, uint16_t size)
 {
-    Serial.print("Write value handler: ");
-    Serial.println(value_handle, HEX);
+//    Serial.print("Write value handler: ");
+//    Serial.println(value_handle, HEX);
 
     if(character1_handle == value_handle)
     {
@@ -103,12 +105,12 @@ int gattWriteCallback(uint16_t value_handle, uint8_t *buffer, uint16_t size)
     return 0;
 }
 
-/*void m_uart_rx_handle()
-{   //update characteristic data
-    ble.sendNotify(character2_handle, rx_buf, CHARACTERISTIC2_MAX_LEN);
-    memset(rx_buf, 0x00,20);
-    rx_state = 0;
-}*/
+//void m_uart_rx_handle()
+//{   //update characteristic data
+//    ble.sendNotify(character2_handle, (uint8_t*)rx_buf, CHARACTERISTIC2_MAX_LEN);
+//    memset(rx_buf, 0x00,20);
+//    rx_state = 0;
+//}
 
 static void  characteristic2_notify(btstack_timer_source_t *ts)
 {   
@@ -221,16 +223,20 @@ void readSensorsTaskCallback() {
   // read CO sensor
   readings.heaterOn = heaterOn ? 1 : 0;
   readings.co = readCoSensor();
-  Serial.write((uint8_t*) &readings, sizeof(SENSOR_READINGS));
+//  Serial.write((uint8_t*) &readings, sizeof(SENSOR_READINGS));
+  // Send data over BLE
+  // TOFIX: Only sending every 80bytes instead of 20bytes
+  ble.sendNotify(character2_handle, (uint8_t*) &readings, sizeof(SENSOR_READINGS));
   // for debugging
-//  Serial.print("t: ");
-//  Serial.print(dht.readTemperature());
-//  Serial.print(" h: ");
-//  Serial.print(dht.readHumidity());
-//  Serial.print(" p: ");
-//  Serial.print(readDustSensor());
-//  Serial.print(heaterOn ? " C: " : " c: ");
-//  Serial.println(readCoSensor());
+  Serial.print("t: ");
+  Serial.print(readings.temperature);
+  Serial.print(" h: ");
+  Serial.print(readings.humidity);
+  Serial.print(" p: ");
+  Serial.print(readings.particles);
+  Serial.print(heaterOn ? " C: " : " c: ");
+  Serial.println(readings.co);
+  Serial.println(sizeof(SENSOR_READINGS));
 }
 
 
@@ -324,9 +330,9 @@ void setup() {
   ble.startAdvertising();
 
   // set one-shot timer
-  characteristic2.process = &characteristic2_notify;
-  ble.setTimer(&characteristic2, 500);//100ms
-  ble.addTimer(&characteristic2);
+  //characteristic2.process = &characteristic2_notify;
+  //ble.setTimer(&characteristic2, 500);//100ms
+  //ble.addTimer(&characteristic2);
 
   // **BLE END**
   
