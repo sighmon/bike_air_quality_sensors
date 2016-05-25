@@ -171,7 +171,7 @@ uint8_t Crc8(const void *vptr, int len)
 void readSensorsTaskCallback();
 void coHeaterTaskCallback();
 
-Task readSensorsTask(5000, -1, &readSensorsTaskCallback);
+Task readSensorsTask(2000, -1, &readSensorsTaskCallback);
 Task coHeaterTask(60000, -1, &coHeaterTaskCallback);
 Scheduler runner;
 
@@ -185,7 +185,7 @@ Scheduler runner;
 
 #include <dht.h>
 dht DHT;
-#define DHT22_PIN 5
+#define DHT22_PIN 6
 
 struct
 {
@@ -230,18 +230,24 @@ float readDustSensor();
 float readCoSensor();
 
 void readSensorsTaskCallback() {
-  struct SENSOR_READINGS readings;  
+  struct SENSOR_READINGS readings;
+  uint32_t start;
+  int chk;
+  uint32_t stop;
   // read temperature, humidity
-  uint32_t start = micros();
-  int chk = DHT.read22(DHT22_PIN);
-  uint32_t stop = micros();
-
+  SINGLE_THREADED_BLOCK() {
+    start = micros();
+    chk = DHT.read22(DHT22_PIN);
+    readings.humidity = DHT.humidity;
+    readings.temperature = DHT.temperature;
+    stop = micros();
+  }
   stat.total++;
   switch (chk)
   {
   case DHTLIB_OK:
       stat.ok++;
-      Serial.print("OK,\t");
+      // Serial.print("OK,\t");
       break;
   case DHTLIB_ERROR_CHECKSUM:
       stat.crc_error++;
@@ -256,21 +262,19 @@ void readSensorsTaskCallback() {
       Serial.print("Unknown error,\t");
       break;
   }
+//    Serial.print(DHT.humidity, 1);
+//    Serial.print(",\t");
+//    Serial.print(DHT.temperature, 1);
+//    Serial.print(",\t");
+//    Serial.print(stop - start);
+//    Serial.println();
   // DISPLAY DATA
-  Serial.print(DHT.humidity, 1);
-  Serial.print(",\t");
-  Serial.print(DHT.temperature, 1);
-  Serial.print(",\t");
-  Serial.print(stop - start);
-  Serial.println();
-//  readings.humidity = DHT.humidity;
-//  readings.temperature = DHT.temperature;
   // read particle sensor
   readings.particles = readDustSensor();
   // read CO sensor
   readings.heaterOn = heaterOn ? 1 : 0;
   readings.co = readCoSensor();
-//  Serial.write((uint8_t*) &readings, sizeof(SENSOR_READINGS));
+  //  Serial.write((uint8_t*) &readings, sizeof(SENSOR_READINGS));
   // Send data over BLE
   // TOFIX: Only sending every 80bytes instead of 20bytes
   ble.sendNotify(character2_handle, (uint8_t*) &readings, sizeof(SENSOR_READINGS));
@@ -283,7 +287,7 @@ void readSensorsTaskCallback() {
   Serial.print(readings.particles);
   Serial.print(heaterOn ? " C: " : " c: ");
   Serial.println(readings.co);
-  Serial.println(sizeof(SENSOR_READINGS));
+//    Serial.println(sizeof(SENSOR_READINGS));
 }
 
 
@@ -338,7 +342,7 @@ void coHeaterTaskCallback() {
 
 void setup() {
   
-  Serial.begin(9600);
+  Serial.begin(115200);
   // Serial.println("=BIKE AIR QUALITY SENSOR");
   // Serial.println("========================");
 
