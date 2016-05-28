@@ -212,8 +212,8 @@ float dustDensity = 0;
 
 
 // MQ7 Sensor
-int pwmPower = 3; // Digital 3
-int mqSensor = 4; // Analog 4
+int pwmPower = D3; // Digital 3
+int mqSensor = A4; // Analog 4
 float mqReading = 0;
 bool heaterOn = false;
 
@@ -311,7 +311,7 @@ float readDustSensor() {
 float readCoSensor() {
   // Function to read the Carbon Monoxide sensor
   
-  mqReading = analogRead(mqSensor);
+  mqReading = map(analogRead(mqSensor), 0, 4095, 0, 1023);
 
   return mqReading;
 }
@@ -323,17 +323,18 @@ void coHeaterTaskCallback() {
   if (!heaterOn) {
     analogWrite(pwmPower, 0);
     heaterOn = true;
-    // Serial.println("=");
-    // Serial.println("=Heater is on for 60s");
-    // Serial.println("=");
+    Serial.println("=");
+    Serial.println("=Heater is on for 60s");
+    Serial.println("=");
     coHeaterTask.setInterval(60000);
     
   } else {
-    analogWrite(pwmPower, (255 - 255*(1.4/5)));
+    // Dropping the heater to 1.4v when taking the reading
+    analogWrite(pwmPower, (255 - 255*(1.4/3.3)));
     heaterOn = false;
-    // Serial.println("=");
-    // Serial.println("=Heater is off for 90s");
-    // Serial.println("=");
+    Serial.println("=");
+    Serial.println("=Heater is off for 90s");
+    Serial.println("=");
     coHeaterTask.setInterval(90000);
   }
   
@@ -341,10 +342,13 @@ void coHeaterTaskCallback() {
 
 
 void setup() {
+
+  // Set CO heater pin to output
+  pinMode(pwmPower, OUTPUT);
   
   Serial.begin(115200);
-  // Serial.println("=BIKE AIR QUALITY SENSOR");
-  // Serial.println("========================");
+   Serial.println("BIKE AIR QUALITY SENSOR");
+   Serial.println("=======================");
 
   // **BLE**
 
