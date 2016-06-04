@@ -26,6 +26,9 @@
 // For RedBear Duo don't connect to the cloud.
 SYSTEM_MODE(MANUAL);
 
+// Bluetooth connection LED
+int bluetoothLED = 7;
+
 #define DEVICE_NAME                "Air quality"
 
 #define CHARACTERISTIC1_MAX_LEN    20
@@ -72,7 +75,8 @@ static uint8_t rx_state=0;
 void deviceConnectedCallback(BLEStatus_t status, uint16_t handle) {
     switch (status){
         case BLE_STATUS_OK:
-//            Serial.println("Device connected!");
+            Serial.println("Device connected!");
+            digitalWrite(bluetoothLED, HIGH);
             break;
         default:
             break;
@@ -81,6 +85,7 @@ void deviceConnectedCallback(BLEStatus_t status, uint16_t handle) {
 
 void deviceDisconnectedCallback(uint16_t handle){
     Serial.println("Disconnected.");
+    digitalWrite(bluetoothLED, LOW);
 }
 
 
@@ -171,7 +176,7 @@ uint8_t Crc8(const void *vptr, int len)
 void readSensorsTaskCallback();
 void coHeaterTaskCallback();
 
-Task readSensorsTask(2000, -1, &readSensorsTaskCallback);
+Task readSensorsTask(1000, -1, &readSensorsTaskCallback);
 Task coHeaterTask(60000, -1, &coHeaterTaskCallback);
 Scheduler runner;
 
@@ -342,6 +347,9 @@ void setup() {
 
   // Set the RGB LED on the RedBear Duo
   RGB.control(true);
+
+  // Set blue LED on the RedBear Duo
+  pinMode(bluetoothLED, OUTPUT);
   
   Serial.begin(115200);
    Serial.println("BIKE AIR QUALITY SENSOR");
@@ -362,6 +370,10 @@ void setup() {
   ble.addService(0x1801);
   ble.addCharacteristic(0x2A05, ATT_PROPERTY_INDICATE, change, sizeof(change));
 
+  // Battery
+  ble.addService(0x180F);
+  static uint8_t battery[1] = {0x64};
+  ble.addCharacteristic(0x2A19, ATT_PROPERTY_READ, battery, sizeof(battery));
 
   ble.addService(service1_uuid);
   character1_handle = ble.addCharacteristicDynamic(service1_tx_uuid, ATT_PROPERTY_NOTIFY|ATT_PROPERTY_WRITE|ATT_PROPERTY_WRITE_WITHOUT_RESPONSE, characteristic1_data, CHARACTERISTIC1_MAX_LEN);
