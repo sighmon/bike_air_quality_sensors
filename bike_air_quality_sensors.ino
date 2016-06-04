@@ -201,8 +201,8 @@ struct
 
 
 // Sharp Optical Dust Sensor GP2Y10
-int measurePin = 5;
-int ledPower = 12;
+int measurePin = A2;
+int ledPower = D8;
 int samplingTime = 280;
 int deltaTime = 40;
 int sleepTime = 9680;
@@ -298,7 +298,7 @@ float readDustSensor() {
   digitalWrite(ledPower,LOW); // power on the LED
   delayMicroseconds(samplingTime);
 
-  voMeasured = analogRead(measurePin); // read the dust value
+  voMeasured = map(analogRead(measurePin), 0, 4095, 0, 1023); // read the dust value
   
   delayMicroseconds(deltaTime);
   digitalWrite(ledPower,HIGH); // turn the LED off
