@@ -315,6 +315,7 @@ void coHeaterTaskCallback() {
   if (!heaterOn) {
     analogWrite(pwmPower, 0);
     heaterOn = true;
+    RGB.color(100, 0, 0); // Red
     Serial.println("=");
     Serial.println("=Heater is on for 60s");
     Serial.println("=");
@@ -324,6 +325,7 @@ void coHeaterTaskCallback() {
     // Dropping the heater to 1.4v when taking the reading
     analogWrite(pwmPower, (255 - 255*(1.4/3.3)));
     heaterOn = false;
+    RGB.color(0, 100, 0); // Green
     Serial.println("=");
     Serial.println("=Heater is off for 90s");
     Serial.println("=");
@@ -337,6 +339,9 @@ void setup() {
 
   // Set CO heater pin to output
   pinMode(pwmPower, OUTPUT);
+
+  // Set the RGB LED on the RedBear Duo
+  RGB.control(true);
   
   Serial.begin(115200);
    Serial.println("BIKE AIR QUALITY SENSOR");
@@ -393,10 +398,7 @@ void setup() {
   runner.enableAll();
   
   // DHT setup
-  // Serial.println("=Setting up DHT22 temp/humidity sensor");
-//  dht.begin();
-  Serial.println("dht22_test.ino");
-  Serial.print("LIBRARY VERSION: ");
+  Serial.print("DHT22 LIBRARY VERSION: ");
   Serial.println(DHT_LIB_VERSION);
   
   // Sharp Optical Dust Sensor GP2Y10 setup
@@ -408,6 +410,5 @@ void loop() {
   
   // Run tasks
   runner.execute();
-//  readSensorsTaskCallback();
 
 }
