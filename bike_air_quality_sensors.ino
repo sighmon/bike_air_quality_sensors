@@ -175,14 +175,6 @@ Task readSensorsTask(2000, -1, &readSensorsTaskCallback);
 Task coHeaterTask(60000, -1, &coHeaterTaskCallback);
 Scheduler runner;
 
-// DHT humidity/temp sensor
-//#include "DHT.h"
-//#define DHTPIN 2
-//#define DHTTYPE DHT22
-
-// Initialize DHT sensor.
-//DHT dht(DHTPIN, DHTTYPE);
-
 #include <dht.h>
 dht DHT;
 #define DHT22_PIN 6
