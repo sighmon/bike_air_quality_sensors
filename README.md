@@ -1,6 +1,6 @@
 # Bike air quality sensors
 
-<img src="https://raw.githubusercontent.com/sighmon/bike_air_quality_sensors/master/sensors-arduino.jpg" width="100%" />
+<img src="https://raw.githubusercontent.com/sighmon/bike_air_quality_sensors/master/sensors-redbearduo.jpg" width="100%" />
 
 A set of Carbon Monoxide & dust particle sensors combined with humidity/temperature sensors for measuring the air quality while cycling.
 
@@ -12,12 +12,10 @@ by Damien & Simon
 
 ## Hardware
 
-* [Arduino Uno](https://www.arduino.cc/en/Main/arduinoBoardUno) for prototyping, something smaller for the final product
+* [Redbear Duo](https://github.com/redbear/Duo)
 * [MQ-7 Carbon Monoxide sensor](https://www.sparkfun.com/products/9403)
 * [GP2Y10 Dust Particle sensor](https://www.sparkfun.com/products/9689)
 * [DHT-22 Temperature/Humidity sensor](https://www.sparkfun.com/products/10167)
-* [BLE Nano Bluetooth module](http://littlebirdelectronics.com.au/collections/redbearlabs/products/ble-nano-kit) for iOS
-* [HC-06 Bluetooth module](http://www.miniinthebox.com/hc-06-wireless-bluetooth-transceiver-rf-main-module-serial-for-arduino_p903460.html) for Android
 
 ## Output
 
@@ -36,6 +34,12 @@ The sensors are read every second and output in a struct:
 * Dust particle raw sensor value
 * Carbon monoxide raw sensor value
 * Heater on/off sent as 1 or 0
+
+### Power usage
+
+* When heating the Carbon Monoxide sensor: 20 mA
+* When not heating the Carbon Monoxide sensor: 13 mA
+
 
 ### Data from the iOS app with GPS location & timestamp
 
