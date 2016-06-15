@@ -60,7 +60,7 @@ static uint8_t characteristic2_data[CHARACTERISTIC2_MAX_LEN]={0x00};
 static btstack_timer_source_t characteristic2;
 
 static advParams_t adv_params;
-static uint8_t adv_data[]={0x02,0x01,0x06,0x08,0x08,'B','i','s','c','u','i','t',0x11,0x07,0x1e,0x94,0x8d,0xf1,0x48,0x31,0x94,0xba,0x75,0x4c,0x3e,0x50,0x00,0x00,0x3d,0x71};
+static uint8_t adv_data[]={0x02,0x01,0x06,0x08,0x08,'S','e','n','s','o','r','s',0x11,0x07,0x1e,0x94,0x8d,0xf1,0x48,0x31,0x94,0xba,0x75,0x4c,0x3e,0x50,0x00,0x00,0x3d,0x71};
 
 char rx_buf[TXRX_BUF_LEN];
 static uint8_t rx_buf_num;
@@ -132,7 +132,7 @@ static void  characteristic2_notify(btstack_timer_source_t *ts)
 //      Serial.println(rx_buf);
       rx_state = 1;
     }
-    if(rx_state != 0)
+    if (rx_state != 0)
     {
         ble.sendNotify(character2_handle, (uint8_t*)rx_buf, CHARACTERISTIC2_MAX_LEN);
         memset(rx_buf, 0x00,20);
@@ -176,7 +176,7 @@ uint8_t Crc8(const void *vptr, int len)
 void readSensorsTaskCallback();
 void coHeaterTaskCallback();
 
-Task readSensorsTask(1000, -1, &readSensorsTaskCallback);
+Task readSensorsTask(2000, -1, &readSensorsTaskCallback);
 Task coHeaterTask(60000, -1, &coHeaterTaskCallback);
 Scheduler runner;
 
@@ -259,23 +259,18 @@ void readSensorsTaskCallback() {
       Serial.print("Unknown error,\t");
       break;
   }
-//    Serial.print(DHT.humidity, 1);
-//    Serial.print(",\t");
-//    Serial.print(DHT.temperature, 1);
-//    Serial.print(",\t");
-//    Serial.print(stop - start);
-//    Serial.println();
+
   // DISPLAY DATA
   // read particle sensor
   readings.particles = readDustSensor();
   // read CO sensor
   readings.heaterOn = heaterOn ? 1 : 0;
   readings.co = readCoSensor();
-  //  Serial.write((uint8_t*) &readings, sizeof(SENSOR_READINGS));
+
   // Send data over BLE
-  // TOFIX: Only sending every 80bytes instead of 20bytes
   ble.sendNotify(character2_handle, (uint8_t*) &readings, sizeof(SENSOR_READINGS));
-  // for debugging
+  
+  // Print to serial for debugging
   Serial.print("t: ");
   Serial.print(readings.temperature);
   Serial.print(" h: ");
@@ -284,6 +279,12 @@ void readSensorsTaskCallback() {
   Serial.print(readings.particles);
   Serial.print(heaterOn ? " C: " : " c: ");
   Serial.println(readings.co);
+//  Serial.print("Data: ");
+//  for (int i = 0; i < sizeof(SENSOR_READINGS); i++) {
+//    Serial.print(((uint8_t*) &readings)[i], HEX);
+//  }
+//  Serial.println("");
+//  Serial.println("");
 //    Serial.println(sizeof(SENSOR_READINGS));
 }
 
