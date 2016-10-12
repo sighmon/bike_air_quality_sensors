@@ -1,6 +1,6 @@
 # Bike air quality sensors
 
-<img src="https://raw.githubusercontent.com/sighmon/bike_air_quality_sensors/master/sensors-redbearduo.jpg" width="100%" />
+<img src="https://raw.githubusercontent.com/sighmon/bike_air_quality_sensors/redbear-duo-serial/sensors-redbearduo.jpg" width="100%" />
 
 A set of Carbon Monoxide & dust particle sensors combined with humidity/temperature sensors for measuring the air quality while cycling.
 
@@ -83,6 +83,14 @@ This Python parser does just that. :-)
 
 <https://github.com/sighmon/bike_air_quality_sensor_csv_parser>
 
+
+## Manufactured by OSH Park
+
+<img src="https://raw.githubusercontent.com/sighmon/bike_air_quality_sensors/redbear-duo-serial/air-quality-sensors-v0.1.jpg" width="100%" />
+
+I got the first batch of boards manufactured by <https://oshpark.com>. You can see the shared project here: <https://oshpark.com/profiles/sighmon>
+
+
 ## GovHack Machinery of Data entry video
 
 <iframe width="100%" height="315" src="https://www.youtube.com/embed/KiIhrwRlb6w" frameborder="0" allowfullscreen></iframe>
@@ -94,4 +102,3 @@ This Python parser does just that. :-)
 * <s>Build an iOS app.</s>
 * <s>Build an Android app.</s>
 * Build a Rails server to open up the data via a public API.
-
