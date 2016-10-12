@@ -86,7 +86,7 @@ This Python parser does just that. :-)
 
 ## Manufactured by OSH Park
 
-<img src="https://raw.githubusercontent.com/sighmon/bike_air_quality_sensors/redbear-duo-serial/air-quality-sensors-v0.1.jpg" width="100%" />
+<img src="https://raw.githubusercontent.com/sighmon/bike_air_quality_sensors/redbear-duo-serial/kicad/air-quality-sensors-v0.1.jpg" width="100%" />
 
 I got the first batch of boards manufactured by <https://oshpark.com>. You can see the shared project here: <https://oshpark.com/profiles/sighmon>
 
