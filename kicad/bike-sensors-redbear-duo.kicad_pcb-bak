@@ -3,7 +3,7 @@
   (general
     (links 24)
     (no_connects 24)
-    (area 142.717857 58.125 200.182143 114.445)
+    (area 152.324999 63.424999 190.575001 109.295001)
     (thickness 1.6)
     (drawings 227)
     (tracks 0)
@@ -90,7 +90,7 @@
       (subtractmaskfromsilk false)
       (outputformat 1)
       (mirror false)
-      (drillshape 1)
+      (drillshape 0)
       (scaleselection 1)
       (outputdirectory ""))
   )
