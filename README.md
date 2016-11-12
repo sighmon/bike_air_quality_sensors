@@ -1,6 +1,6 @@
 # Bike air quality sensors
 
-<img src="https://raw.githubusercontent.com/sighmon/bike_air_quality_sensors/redbear-duo-serial/sensors-redbearduo.jpg" width="100%" />
+<img src="https://raw.githubusercontent.com/sighmon/bike_air_quality_sensors/redbear-duo-serial/sensors-redbearduo-v0.1.jpg" width="100%" />
 
 A set of Carbon Monoxide & dust particle sensors combined with humidity/temperature sensors for measuring the air quality while cycling.
 
