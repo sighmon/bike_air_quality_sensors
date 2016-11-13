@@ -16,6 +16,11 @@ by Damien & Simon
 * [MQ-7 Carbon Monoxide sensor](https://www.sparkfun.com/products/9403)
 * [GP2Y10 Dust Particle sensor](https://www.sparkfun.com/products/9689)
 * [DHT-22 Temperature/Humidity sensor](https://www.sparkfun.com/products/10167)
+* P-channel MOSFET
+* 10K ohm resistor
+* 20K ohm resistor
+* 150 ohm resistor
+* 220µF capacitor
 
 ## Output
 
