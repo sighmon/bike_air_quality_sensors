@@ -42,8 +42,8 @@ The sensors are read every second and output in a struct:
 
 ### Power usage
 
-* When heating the Carbon Monoxide sensor: 20 mA
-* When not heating the Carbon Monoxide sensor: 13 mA
+* When heating the Carbon Monoxide sensor: 200 mA
+* When not heating the Carbon Monoxide sensor: 130 mA
 
 
 ### Data from the iOS app with GPS location & timestamp
