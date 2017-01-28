@@ -100,6 +100,12 @@ I got the first batch of boards manufactured by <https://oshpark.com>. You can s
 
 <iframe width="100%" height="315" src="https://www.youtube.com/embed/KiIhrwRlb6w" frameborder="0" allowfullscreen></iframe>
 
+## Troubleshooting
+
+- If the RedBear Duo gets itself into a flashing blue light of doom, hold down both ```reset + setup``` for 3 seconds, then let go of the reset. Hold the setup button until the flashing turns yellow. That’s DFU mode to [re-upload the user firmware](https://github.com/redbear/Duo/blob/master/docs/firmware_deployment_guide.md).
+
+``` $ dfu-util -d 2b04:d058 -a 0 -s 0x80C0000 -D duo-user-part.bin```
+
 ## TODO
 
 * <s>Connect sensors to the Arduino.</s>
